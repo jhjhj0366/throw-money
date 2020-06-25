@@ -1,0 +1,32 @@
+### 뿌리기 API
+POST {{host}}/api/v1/money/throw
+Content-Type: application/json
+X-USER-ID: {{user01}}
+X-ROOM-ID: {{room01}}
+
+{
+  "throwAmount": 100000,
+  "receiverCount": 3
+}
+
+### 받기 API
+POST {{host}}/api/v1/money/receive
+Content-Type: application/json
+X-USER-ID: {{user02}}
+X-ROOM-ID: {{room01}}
+
+{
+  "token" : "abc"
+}
+
+### 조회 API
+POST {{host}}/api/v1/money/transactions
+Content-Type: application/json
+X-USER-ID: {{user01}}
+X-ROOM-ID: {{room01}}
+
+{
+  "token" : "abc"
+}
+
+###

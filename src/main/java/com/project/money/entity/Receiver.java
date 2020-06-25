@@ -19,6 +19,6 @@ public class Receiver {
     private Long receiveUserId;    // 받은 사람 ID
 
     @Column(name = "receive_amt", nullable = false)
-    private Long receiveAmt;       // 받은 사람 금액
+    private Long receiveAmount;    // 받은 금액
 
 }
