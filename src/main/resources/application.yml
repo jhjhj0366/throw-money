@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: money
+  profiles:
+    active: local
