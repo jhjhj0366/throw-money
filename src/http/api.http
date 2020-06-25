@@ -1,6 +1,0 @@
-### 테스트 API
-POST {{host}}/test
-Content-Type: application/json
-
-{
-}

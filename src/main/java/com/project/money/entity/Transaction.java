@@ -29,11 +29,14 @@ public class Transaction {
     private String token;          // 뿌리기시 발급되는 token
 
     @Column(name = "throw_amt", nullable = false)
-    private Long throwAmt;         // 뿌린 금액
+    private Long throwAmount;      // 뿌린 금액
 
     @CreationTimestamp
     @Column(name = "throw_date_time", nullable = false)
     private LocalDateTime throwDateTime; // 뿌린 시간
+
+    @Column(name = "receiver_count", nullable = false)
+    private Long receiverCount;          // 받을 인원
 
     @JoinColumn(name = "transaction_id")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
