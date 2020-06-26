@@ -20,7 +20,7 @@ public class ErrorResponse {
         this.error = error;
     }
 
-    private ErrorResponse(ErrorCode code) {
+    public ErrorResponse(ErrorCode code) {
         this.message = code.getMessage();
         this.status = code.getStatus();
         this.error = new ArrayList<>();
