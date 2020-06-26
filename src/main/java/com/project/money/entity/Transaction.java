@@ -1,7 +1,6 @@
 package com.project.money.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -12,10 +11,12 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Transaction {
 
     @Id
-    @Column(name = "transaction_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -25,7 +26,7 @@ public class Transaction {
     @Column(name = "room_id", length = 200, nullable = false)
     private String roomId;         // 뿌린 대화방 ID
 
-    @Column(length = 3, nullable = false)
+    @Column(name = "token", length = 3, nullable = false)
     private String token;          // 뿌리기시 발급되는 token
 
     @Column(name = "throw_amt", nullable = false)
@@ -38,7 +39,7 @@ public class Transaction {
     @Column(name = "receiver_count", nullable = false)
     private Long receiverCount;          // 받을 인원
 
-    @JoinColumn(name = "transaction_id")
+    @JoinColumn(name = "user_id")
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Receiver> receivers = new ArrayList<>();
 

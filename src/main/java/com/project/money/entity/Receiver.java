@@ -1,19 +1,23 @@
 package com.project.money.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Data
 @EqualsAndHashCode(of = "id")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Receiver {
 
     @Id
-    @Column(name = "transaction_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "token", length = 3, nullable = false)
+    private String token;          // 뿌리기시 발급되는 token
 
     @Column(name = "receive_user_id", nullable = false)
     private Long receiveUserId;    // 받은 사람 ID

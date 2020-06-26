@@ -30,9 +30,9 @@ public class MoneyController {
         log.info("setThrowMoneyInfo - {}, {}, {}", userId, roomId, req);
 
         String token = moneyService.setThrowMoneyInfo(
+                userId,
+                roomId,
                 ThrowMoneyInfo.builder()
-                        .sendUserId(userId)
-                        .roomId(roomId)
                         .throwAmount(req.getThrowAmount())
                         .receiverCount(req.getReceiverCount()).build());
 
