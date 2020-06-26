@@ -20,7 +20,7 @@ public class CaffeineCacheConfig {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         List<CaffeineCache> caches = Arrays.stream(CacheType.values())
                 .map(c -> new CaffeineCache(c.getCacheName(), Caffeine.newBuilder()
-                                .expireAfterWrite(c.getExpiredTime(), TimeUnit.SECONDS)
+                                .expireAfterWrite(c.getExpireAfterWrite(), TimeUnit.MINUTES)
                                 .maximumSize(c.getMaximumSize())
                                 .softValues()
                                 .recordStats()
