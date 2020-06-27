@@ -44,12 +44,14 @@ Throw Money Service
 ## Getting Started
 - Compile
    ~~~bash
-   gradle complie
+   gradle build
+   ~~~
   
 - Package
    ~~~bash
    gradle jar
-
+   ~~~
+   
 - Startings
    ~~~bash
    java -jar build/libs/money-0.0.1-SNAPSHOT.jar 
