@@ -17,10 +17,27 @@ Throw Money Service
 ### Table Structure
 1. 거래 정보 테이블   
    ~~~sql
+   CREATE TABLE TRANSACTION (
+     ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+     SEND_USER_ID INT NOT NULL,
+     ROOM_ID VARCHAR(200) NOT NULL,
+     TOKEN CHAR(3) NOT NULL,
+     THROWAMOUNT INT NOT NULL,
+     THROW_DATE_TIME TIMESTAMP,
+     RECEIVER_COUNT INT NOT NULL,
+     USER_ID INT
+   )
    ~~~
+
 
 2. 받은 정보 테이블   
    ~~~sql
+   CREATE TABLE RECEIVER (
+    ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    TOKEN CHAR(3) NOT NULL,
+    RECEIVE_USER_ID INT NOT NULL,
+    RECEIVE_AMT INT NOT NULL       
+   )
    ~~~
 
 
@@ -33,7 +50,7 @@ Throw Money Service
    ~~~bash
    gradle jar
 
-- Starting
+- Startings
    ~~~bash
    gradle run
 
