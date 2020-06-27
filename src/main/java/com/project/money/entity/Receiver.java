@@ -19,7 +19,7 @@ public class Receiver {
     @Column(name = "token", length = 3, nullable = false)
     private String token;          // 뿌리기시 발급되는 token
 
-    @Column(name = "receive_user_id", nullable = false)
+    @Column(name = "receive_user_id")
     private Long receiveUserId;    // 받은 사람 ID
 
     @Column(name = "receive_amt", nullable = false)

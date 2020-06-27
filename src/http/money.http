@@ -9,6 +9,10 @@ X-ROOM-ID: {{room01}}
   "receiverCount": 3
 }
 
+> {%
+client.global.set("token", response.body.token);
+ %}
+
 ### 받기 API
 POST {{host}}/api/v1/money/receive
 Content-Type: application/json
@@ -16,7 +20,7 @@ X-USER-ID: {{user02}}
 X-ROOM-ID: {{room01}}
 
 {
-  "token" : "abc"
+  "token" : "{{token}}"
 }
 
 ### 조회 API
@@ -26,7 +30,7 @@ X-USER-ID: {{user01}}
 X-ROOM-ID: {{room01}}
 
 {
-  "token" : "abc"
+  "token" : "{{token}}"
 }
 
 ###

@@ -17,7 +17,7 @@ public class BusinessException extends RuntimeException {
     }
 
     public BusinessException(ErrorCode errorCode, String detailMessage) {
-        super(String.format("{} - {}", errorCode.getMessage(), detailMessage));
+        super(String.format("%s - %s", errorCode.getMessage(), detailMessage));
         this.errorCode = errorCode;
     }
 

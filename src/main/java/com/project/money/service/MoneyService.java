@@ -1,6 +1,7 @@
 package com.project.money.service;
 
-import com.project.money.config.CacheType;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.project.money.entity.Receiver;
 import com.project.money.entity.Transaction;
 import com.project.money.exception.BusinessException;
@@ -11,8 +12,6 @@ import com.project.money.model.Transactions;
 import com.project.money.repository.ReceiverRepository;
 import com.project.money.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,12 +28,14 @@ import java.util.stream.Collectors;
 public class MoneyService {
     private static final int TOKEN_SIZE = 3;
 
-    private final CacheManager cacheManager;
     private final TransactionRepository transactionRepository;
     private final ReceiverRepository receiverRepository;
 
-    private final Cache cache = cacheManager.getCache(CacheType.THROW_MONEY_TOKEN.getCacheName());
-    private static final Random random = new Random();
+    private static Random random = new Random();
+
+    Cache<String, String> cache = Caffeine.newBuilder()
+            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .build();
 
     @Transactional
     public String setThrowMoneyInfo(Long sendUserId, String roomId, ThrowMoneyInfo throwMoneyInfo) {
@@ -80,7 +82,7 @@ public class MoneyService {
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "캐시 에러 입니다.");
         }
 
-        if (! cache.evictIfPresent(token)) {
+        if (Objects.isNull(cache.getIfPresent(token))) {
             throw new BusinessException(ErrorCode.INVALID_TOKEN_VALUE);
         }
 
@@ -92,18 +94,16 @@ public class MoneyService {
                         throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED, "돈 받기를 할 수 없는 사용자 입니다.");
                     }
 
+                    if (receiverRepository.findByTokenAndReceiveUserId(token, receiveUserId).isPresent()) {
+                        throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED, "이미 돈 받기를한 사용자 입니다.");
+                    }
+
                     // update receiver
-                    return transactionInfo.getReceivers().stream()
-                            .filter(r -> Objects.isNull(r.getReceiveUserId()))
-                            .findAny()
-                            .map(receiverInfo -> {
-                                receiverRepository.findById(receiverInfo.getId())
-                                        .map(receiver -> {
-                                            receiver.setReceiveUserId(receiveUserId);
-                                            return receiverRepository.save(receiver);
-                                        })
-                                        .orElseThrow(() -> new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "DB ERROR."));
-                                return receiverInfo.getReceiveAmount();
+                    return receiverRepository.findFirstByTokenAndReceiveUserIdIsNull(token)
+                            .map(receiver -> {
+                                receiver.setReceiveUserId(receiveUserId);
+                                receiverRepository.save(receiver);
+                                return receiver.getReceiveAmount();
                             })
                             .orElseThrow(() -> new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED, "더이상 받을 수 있는 돈이 없습니다."));
                 })
@@ -119,14 +119,13 @@ public class MoneyService {
                         .throwDateTime(transaction.getThrowDateTime())
                         .throwAmount(transaction.getThrowAmount())
                         .receiveTotalAmount(receiverRepository.findReceiveTotalAmountByToken(token))
-                        .receiversInfo(transaction.getReceivers()
-                                .stream()
-                                .filter(receiver -> Objects.nonNull(receiver.getReceiveUserId()))
-                                .map(receiver -> ReceiverInfo.builder()
-                                        .receiveUserId(receiver.getReceiveUserId())
-                                        .receiveAmount(receiver.getReceiveAmount())
-                                        .build())
-                                .collect(Collectors.toList())
+                        .receiversInfo(
+                                receiverRepository.findByTokenAndReceiveUserIdIsNotNull(token).stream()
+                                        .map(receiver -> ReceiverInfo.builder()
+                                                .receiveUserId(receiver.getReceiveUserId())
+                                                .receiveAmount(receiver.getReceiveAmount())
+                                                .build())
+                                        .collect(Collectors.toList())
                         )
                         .build())
                 .orElseThrow(() -> new BusinessException(ErrorCode.INVALID_INPUT_VALUE, "조회할 수 없는 정보입니다."));
@@ -134,14 +133,10 @@ public class MoneyService {
 
     // get token function
     String getToken() {
-        if (Objects.isNull(cache)) {
-            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "Cache Error.");
-        }
-
         final String token = generateToken();
 
         // check token
-        if (cache.evictIfPresent(token)) {
+        if (Objects.nonNull(cache.getIfPresent(token))) {
             return getToken();
         }
 
@@ -153,23 +148,23 @@ public class MoneyService {
 
     // make token function
     static String generateToken() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder token = new StringBuilder();
 
         for (int i = 0; i < TOKEN_SIZE; i++) {
             switch (random.nextInt(3)) {
                 case 0:
-                    buffer.append((char)(random.nextInt(26) + 97)); // a to z
+                    token.append((char) (random.nextInt(26) + 97)); // a to z
                     break;
                 case 1:
-                    buffer.append((char)(random.nextInt(26) + 65)); // A to Z
+                    token.append((char) (random.nextInt(26) + 65)); // A to Z
                     break;
                 case 2:
-                    buffer.append((char)(random.nextInt(10)));      // 0 to 9
+                    token.append(random.nextInt(10));      // 0 to 9
                     break;
             }
         }
 
-        return String.valueOf(buffer);
+        return token.toString();
     }
 
 }

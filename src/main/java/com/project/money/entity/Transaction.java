@@ -40,7 +40,7 @@ public class Transaction {
     private Long receiverCount;          // 받을 인원
 
     @JoinColumn(name = "user_id")
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Receiver> receivers = new ArrayList<>();
 
 }
