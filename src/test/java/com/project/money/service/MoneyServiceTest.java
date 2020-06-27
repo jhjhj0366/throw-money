@@ -4,6 +4,7 @@ import com.project.money.entity.Receiver;
 import com.project.money.entity.Transaction;
 import com.project.money.exception.BusinessException;
 import com.project.money.model.ThrowMoneyInfo;
+import com.project.money.model.Transactions;
 import com.project.money.repository.ReceiverRepository;
 import com.project.money.repository.TransactionRepository;
 import org.junit.Assert;
@@ -22,7 +23,7 @@ import java.time.LocalDateTime;
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @Transactional
-class MoneyServiceTest {
+public class MoneyServiceTest {
 
     @Autowired
     MoneyService moneyService;
@@ -108,6 +109,7 @@ class MoneyServiceTest {
     @Test
     public void 돈_조회() {
 
-
+        Transactions transactions = moneyService.getTransactions(originTransaction.getSendUserId(), originTransaction.getRoomId(), originToken);
+        Assert.assertNotNull(transactions);
     }
 }
