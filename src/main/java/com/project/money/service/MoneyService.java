@@ -86,7 +86,7 @@ public class MoneyService {
     }
 
     // get token function
-    private String getToken() {
+    String getToken() {
         if (Objects.isNull(cache)) {
             throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR, "Cache Error.");
         }
@@ -106,7 +106,7 @@ public class MoneyService {
     }
 
     // make token function
-    private static String generateToken() {
+    static String generateToken() {
         Random random = new Random();
         StringBuffer buffer = new StringBuffer();
 
