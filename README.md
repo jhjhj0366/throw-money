@@ -27,16 +27,15 @@ Throw Money Service
 ## Getting Started
 - Compile
    ~~~bash
-   ~~~
+   gradle complie
   
 - Package
    ~~~bash
-   ~~~
+   gradle jar
 
 - Starting
    ~~~bash
-   ~~~
-
+   gradle run
 
 ## API URL
 
