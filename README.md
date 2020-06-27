@@ -35,7 +35,7 @@ Throw Money Service
    CREATE TABLE RECEIVER (
     ID INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     TOKEN CHAR(3) NOT NULL,
-    RECEIVE_USER_ID INT NOT NULL,
+    RECEIVE_USER_ID INT,
     RECEIVE_AMT INT NOT NULL       
    )
    ~~~
@@ -52,8 +52,8 @@ Throw Money Service
 
 - Startings
    ~~~bash
-   gradle run
-
+   java -jar build/libs/money-0.0.1-SNAPSHOT.jar 
+   ~~~
 ## API URL
 
 | Mtehod   |Path                              | Request                        | Response                                                      | Response                   |
