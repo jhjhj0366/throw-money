@@ -16,8 +16,9 @@ public class Receiver {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "token", length = 3, nullable = false)
-    private String token;          // 뿌리기시 발급되는 token
+    @ManyToOne
+    @JoinColumn(name = "transaction_token", referencedColumnName = "token")
+    private Transaction transaction;
 
     @Column(name = "receive_user_id")
     private Long receiveUserId;    // 받은 사람 ID
@@ -25,4 +26,11 @@ public class Receiver {
     @Column(name = "receive_amt", nullable = false)
     private Long receiveAmount;    // 받은 금액
 
+    public void setTransaction(Transaction transaction) {
+        if (this.transaction != null) {
+            this.transaction.getReceivers().remove(this);
+        }
+        this.transaction = transaction;
+        this.transaction.addRecevers(this);
+    }
 }

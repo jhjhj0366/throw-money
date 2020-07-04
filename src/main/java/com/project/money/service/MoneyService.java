@@ -56,19 +56,20 @@ public class MoneyService {
 
         // save receiver
         Long throwAmount = throwMoneyInfo.getThrowAmount();
+
         for (int i = 0; i < throwMoneyInfo.getReceiverCount() - 1; i++) {
             long receiveAmount = throwAmount * random.nextInt(70) / 100;
 
             receiverRepository.save(Receiver.builder()
-                    .token(token)
+                    .transaction(transaction)
                     .receiveAmount(receiveAmount)
                     .build());
 
-            throwAmount = throwAmount - receiveAmount;
+            throwAmount -= receiveAmount;
         }
 
         receiverRepository.save(Receiver.builder()
-                .token(token)
+                .transaction(transaction)
                 .receiveAmount(throwAmount)
                 .build());
 
@@ -94,12 +95,12 @@ public class MoneyService {
                         throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED, "돈 받기를 할 수 없는 사용자 입니다.");
                     }
 
-                    if (receiverRepository.findByTokenAndReceiveUserId(token, receiveUserId).isPresent()) {
+                    if (receiverRepository.findByTransactionTokenAndReceiveUserId(token, receiveUserId).isPresent()) {
                         throw new BusinessException(ErrorCode.HANDLE_ACCESS_DENIED, "이미 돈 받기를한 사용자 입니다.");
                     }
 
                     // update receiver
-                    return receiverRepository.findFirstByTokenAndReceiveUserIdIsNull(token)
+                    return receiverRepository.findFirstByTransactionTokenAndReceiveUserIdIsNull(token)
                             .map(receiver -> {
                                 receiver.setReceiveUserId(receiveUserId);
                                 receiverRepository.save(receiver);
@@ -118,9 +119,9 @@ public class MoneyService {
                 .map(transaction -> Transactions.builder()
                         .throwDateTime(transaction.getThrowDateTime())
                         .throwAmount(transaction.getThrowAmount())
-                        .receiveTotalAmount(receiverRepository.findReceiveTotalAmountByToken(token))
+                        .receiveTotalAmount(receiverRepository.findReceiveTotalAmountByTransactionToken(token))
                         .receiversInfo(
-                                receiverRepository.findByTokenAndReceiveUserIdIsNotNull(token).stream()
+                                receiverRepository.findByTransactionTokenAndReceiveUserIdIsNotNull(token).stream()
                                         .map(receiver -> ReceiverInfo.builder()
                                                 .receiveUserId(receiver.getReceiveUserId())
                                                 .receiveAmount(receiver.getReceiveAmount())

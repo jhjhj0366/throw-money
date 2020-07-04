@@ -4,6 +4,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +15,10 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class Transaction implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)     //  GenerationType 타입에 대해서 찾아보기
     private Long id;
 
     @Column(name = "send_user_id", nullable = false)
@@ -26,7 +27,7 @@ public class Transaction {
     @Column(name = "room_id", length = 200, nullable = false)
     private String roomId;         // 뿌린 대화방 ID
 
-    @Column(name = "token", length = 3, nullable = false)
+    @Column(name = "token", length = 3, nullable = false, unique = true)
     private String token;          // 뿌리기시 발급되는 token
 
     @Column(name = "throw_amt", nullable = false)
@@ -39,8 +40,10 @@ public class Transaction {
     @Column(name = "receiver_count", nullable = false)
     private Long receiverCount;          // 받을 인원
 
-    @JoinColumn(name = "user_id")
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "transaction", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Receiver> receivers = new ArrayList<>();
 
+    public void addRecevers(Receiver receiver) {
+        this.receivers.add(receiver);
+    }
 }

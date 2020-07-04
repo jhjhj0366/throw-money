@@ -12,17 +12,17 @@ import java.util.Optional;
 @Repository
 public interface ReceiverRepository extends JpaRepository<Receiver, Long> {
 
-    @Query(value = "SELECT SUM (r.receiveAmount)" +
+    @Query(value = "SELECT SUM (r.receive_amt)" +
             " FROM Receiver r" +
-            " WHERE r.token = :token" +
-            " AND r.receiveUserId IS NOT NULL" +
-            " GROUP BY r.token")
-    Long findReceiveTotalAmountByToken(@Param("token") String token);
+            " WHERE r.transaction_token= :token" +
+            " AND r.receive_user_id IS NOT NULL" +
+            " GROUP BY r.transaction_token", nativeQuery = true)
+    Long findReceiveTotalAmountByTransactionToken(@Param("token") String token);
 
-    Optional<Receiver> findFirstByTokenAndReceiveUserIdIsNull(String token);
+    Optional<Receiver> findFirstByTransactionTokenAndReceiveUserIdIsNull(String token);
 
-    Optional<Receiver> findByTokenAndReceiveUserId(String token, Long receiveUserId);
+    Optional<Receiver> findByTransactionTokenAndReceiveUserId(String token, Long receiveUserId);
 
-    List<Receiver> findByTokenAndReceiveUserIdIsNotNull(String token);
+    List<Receiver> findByTransactionTokenAndReceiveUserIdIsNotNull(String token);
 
 }
